@@ -903,13 +903,12 @@ async function expandLink() {
 // ── CLEAN URL ──
 function cleanUrl(raw) {
   raw = raw.trim();
-  // Try to extract URL from text
   const urlMatch = raw.match(/https?:\/\/[^\s]+/);
   if (urlMatch) raw = urlMatch[0];
   try {
     const url = new URL(raw);
-    // Remove existing affiliate params
-    ['ref','af_id','utm_source','utm_medium','utm_campaign','aff_id','affiliate'].forEach(p => url.searchParams.delete(p));
+    // Remove TODOS os parâmetros — deixa só o link limpo do produto
+    url.search = '';
     return url.toString();
   } catch {
     return raw;
