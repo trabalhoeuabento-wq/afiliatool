@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AfiliaTool</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #00ff88;
+    --accent2: #ff6b35;
+    --accent3: #7c5cfc;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --ml: #ffe600;
+    --shopee: #ff5733;
+    --magalu: #0086ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb1 { width: 400px; height: 400px; background: var(--accent3); top: -100px; left: -100px; }
+  .orb2 { width: 300px; height: 300px; background: var(--accent); bottom: 100px; right: -50px; }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 48px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+
+  .logo-text {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .logo-text span { color: var(--accent); }
+
+  .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 4px;
+    margin-bottom: 32px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .tab.active {
+    background: var(--surface2);
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* Panels */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Settings card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px; height: 14px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .platforms-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .platform-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .platform-card:focus-within {
+    border-color: var(--accent);
+  }
+
+  .platform-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .platform-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .dot-ml { background: var(--ml); }
+  .dot-shopee { background: var(--shopee); }
+  .dot-magalu { background: var(--magalu); }
+
+  .platform-name {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .field-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  input[type="text"], textarea, select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 8px 10px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+  }
+
+  input::placeholder, textarea::placeholder { color: var(--muted); }
+
+  /* Converter */
+  .converter-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 16px;
+    align-items: start;
+    margin-bottom: 20px;
+  }
+
+  .arrow-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 32px;
+    color: var(--accent);
+    font-size: 22px;
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+
+  textarea {
+    resize: vertical;
+    min-height: 90px;
+    line-height: 1.5;
+  }
+
+  /* Platform selector */
+  .plat-select {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .plat-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .plat-btn.active-ml { border-color: var(--ml); color: var(--ml); background: rgba(255,230,0,0.07); }
+  .plat-btn.active-shopee { border-color: var(--shopee); color: var(--shopee); background: rgba(255,87,51,0.07); }
+  .plat-btn.active-magalu { border-color: var(--magalu); color: var(--magalu); background: rgba(0,134,255,0.07); }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0a0f0a;
+    width: 100%;
+    justify-content: center;
+    font-size: 15px;
+    padding: 14px;
+  }
+
+  .btn-primary:hover { background: #00e07a; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,255,136,0.25); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    padding: 9px 16px;
+  }
+
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Result */
+  .result-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+    display: none;
+  }
+
+  .result-box.show { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .result-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .copy-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .link-display {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    word-break: break-all;
+    line-height: 1.6;
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(0,255,136,0.15);
+  }
+
+  .post-preview {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .channel-btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .channel-btn {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .channel-btn:hover { border-color: var(--accent3); color: var(--accent3); }
+
+  /* Queue */
+  .queue-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .queue-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: border-color 0.2s;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .queue-item:hover { border-color: var(--border); }
+
+  .queue-plat {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .queue-info { flex: 1; min-width: 0; }
+
+  .queue-title {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+  }
+
+  .queue-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    gap: 12px;
+  }
+
+  .queue-status {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .status-agendado { background: rgba(124,92,252,0.15); color: var(--accent3); }
+  .status-publicado { background: rgba(0,255,136,0.1); color: var(--accent); }
+
+  .queue-actions { display: flex; gap: 6px; }
+
+  .icon-btn {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+
+  .icon-btn:hover { color: var(--accent2); border-color: var(--accent2); }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+  .empty-text { font-size: 14px; }
+
+  /* Stats bar */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* Scheduled date input */
+  input[type="datetime-local"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 8px 10px;
+    outline: none;
+    transition: border-color 0.2s;
+    color-scheme: dark;
+  }
+
+  input[type="datetime-local"]:focus { border-color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .platforms-grid { grid-template-columns: 1fr; }
+    .converter-grid { grid-template-columns: 1fr; }
+    .arrow-col { display: none; }
+    .stats-bar { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="app">
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text">Afilia<span>Tool</span></div>
+    </div>
+    <div class="badge">PRIVADO</div>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-total">0</div>
+      <div class="stat-label">Links Gerados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-queue">0</div>
+      <div class="stat-label">Na Fila</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-pub">0</div>
+      <div class="stat-label">Publicados</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('converter')">⚡ Converter Link</button>
+    <button class="tab" onclick="switchTab('queue')">📅 Fila de Posts</button>
+    <button class="tab" onclick="switchTab('settings')">⚙️ Configurações</button>
+  </div>
+
+  <!-- CONVERTER PANEL -->
+  <div class="panel active" id="panel-converter">
+    <div class="card">
+      <div class="card-title">Plataforma</div>
+      <div class="plat-select">
+        <button class="plat-btn active-ml" id="btn-ml" onclick="selectPlat('ml')">
+          <span style="color:var(--ml)">●</span> Mercado Livre
+        </button>
+        <button class="plat-btn" id="btn-shopee" onclick="selectPlat('shopee')">
+          <span style="color:var(--shopee)">●</span> Shopee
+        </button>
+        <button class="plat-btn" id="btn-magalu" onclick="selectPlat('magalu')">
+          <span style="color:var(--magalu)">●</span> Magalu
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Link & Descrição</div>
+      <div class="converter-grid">
+        <div class="field-group">
+          <div class="field-label">Link do Produto</div>
+          <textarea id="input-link" placeholder="Cole aqui o link do produto (pode ser link curto, normal, qualquer formato)"></textarea>
+          <button class="btn btn-secondary" id="btn-expand" onclick="expandLink()" style="margin-top:8px;width:100%;justify-content:center;">
+            🔗 Expandir Link Encurtado
+          </button>
+          <div id="expand-status" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:6px;display:none;"></div>
+        </div>
+        <div class="arrow-col">→</div>
+        <div class="field-group">
+          <div class="field-label">Seu Link de Afiliado</div>
+          <textarea id="output-link" placeholder="Seu link gerado vai aparecer aqui..." readonly style="color: var(--accent);"></textarea>
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-bottom: 16px;">
+        <div class="field-label">Título da Promoção</div>
+        <input type="text" id="input-title" placeholder="Ex: Nike Air Max 270 - 40% OFF 🔥">
+      </div>
+
+      <div class="field-group" style="margin-bottom: 16px;">
+        <div class="field-label">Preço (opcional)</div>
+        <input type="text" id="input-price" placeholder="Ex: R$ 199,90">
+      </div>
+
+      <div class="field-group" style="margin-bottom: 20px;">
+        <div class="field-label">Emoji / Estilo do Post</div>
+        <select id="input-style">
+          <option value="fire">🔥 Promoção quente</option>
+          <option value="alert">🚨 Alerta de oferta</option>
+          <option value="money">💰 Economia garantida</option>
+          <option value="star">⭐ Destaque do dia</option>
+          <option value="clean">Sem emoji (limpo)</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" onclick="generateLink()">⚡ Gerar Link de Afiliado</button>
+    </div>
+
+    <div class="result-box" id="result-box">
+      <div class="result-header">
+        <div class="result-label">✓ Link Gerado</div>
+        <div class="copy-actions">
+          <button class="btn btn-secondary" onclick="copyLink()">📋 Copiar Link</button>
+          <button class="btn btn-secondary" onclick="addToQueue()">📅 Agendar</button>
+        </div>
+      </div>
+
+      <div class="field-label" style="margin-bottom:6px">SEU LINK</div>
+      <div class="link-display" id="result-link-display"></div>
+
+      <div class="field-label" style="margin-bottom:6px">PRÉVIA DO POST</div>
+      <div class="post-preview" id="result-post-preview"></div>
+
+      <div class="field-label" style="margin-bottom:10px">ENVIAR PARA</div>
+      <div class="channel-btns">
+        <button class="channel-btn" onclick="shareChannel('whatsapp')">💬 WhatsApp</button>
+        <button class="channel-btn" onclick="shareChannel('telegram')">✈️ Telegram</button>
+        <button class="channel-btn" onclick="shareChannel('instagram')">📸 Instagram</button>
+        <button class="channel-btn" onclick="copyPost()">📋 Copiar Texto</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUEUE PANEL -->
+  <div class="panel" id="panel-queue">
+
+    <!-- Schedule modal inline -->
+    <div class="card" id="schedule-form" style="display:none; border-color: var(--accent3);">
+      <div class="card-title">Agendar Post</div>
+      <div class="field-group" style="margin-bottom:14px;">
+        <div class="field-label">Data e Hora</div>
+        <input type="datetime-local" id="schedule-datetime">
+      </div>
+      <div class="field-group" style="margin-bottom:14px;">
+        <div class="field-label">Canais</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+            <input type="checkbox" id="ch-wpp" checked style="accent-color:var(--accent)"> WhatsApp
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+            <input type="checkbox" id="ch-tg" style="accent-color:var(--accent)"> Telegram
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+            <input type="checkbox" id="ch-ig" style="accent-color:var(--accent)"> Instagram
+          </label>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-primary" style="flex:1" onclick="confirmSchedule()">✓ Confirmar Agendamento</button>
+        <button class="btn btn-secondary" onclick="cancelSchedule()">Cancelar</button>
+      </div>
+    </div>
+
+    <div class="queue-list" id="queue-list">
+      <div class="empty">
+        <div class="empty-icon">📭</div>
+        <div class="empty-text">Nenhum post na fila ainda.<br>Converta um link e agende!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS PANEL -->
+  <div class="panel" id="panel-settings">
+    <div class="card">
+      <div class="card-title">IDs de Afiliado</div>
+      <div class="platforms-grid">
+        <div class="platform-card">
+          <div class="platform-header">
+            <div class="platform-dot dot-ml"></div>
+            <div class="platform-name" style="color:var(--ml)">Mercado Livre</div>
+          </div>
+          <div class="field-label">ID do Afiliado</div>
+          <input type="text" id="cfg-ml-id" placeholder="Ex: SEU_ID_ML">
+          <div class="field-label" style="margin-top:10px">Parâmetro URL</div>
+          <input type="text" id="cfg-ml-param" placeholder="Ex: ref" value="ref">
+        </div>
+        <div class="platform-card">
+          <div class="platform-header">
+            <div class="platform-dot dot-shopee"></div>
+            <div class="platform-name" style="color:var(--shopee)">Shopee</div>
+          </div>
+          <div class="field-label">ID do Afiliado</div>
+          <input type="text" id="cfg-shopee-id" placeholder="Ex: SEU_ID_SHOPEE">
+          <div class="field-label" style="margin-top:10px">Parâmetro URL</div>
+          <input type="text" id="cfg-shopee-param" placeholder="Ex: af_id" value="af_id">
+        </div>
+        <div class="platform-card">
+          <div class="platform-header">
+            <div class="platform-dot dot-magalu"></div>
+            <div class="platform-name" style="color:var(--magalu)">Magalu</div>
+          </div>
+          <div class="field-label">ID do Afiliado</div>
+          <input type="text" id="cfg-magalu-id" placeholder="Ex: SEU_ID_MAGALU">
+          <div class="field-label" style="margin-top:10px">Parâmetro URL</div>
+          <input type="text" id="cfg-magalu-param" placeholder="Ex: utm_source" value="utm_source">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Assinatura do Post</div>
+      <div class="field-group" style="margin-bottom:14px;">
+        <div class="field-label">Texto no final de cada post</div>
+        <textarea id="cfg-signature" placeholder="Ex: 🛒 Aproveite antes que acabe!&#10;📲 Siga para mais ofertas"></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="saveSettings()">💾 Salvar Configurações</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──
+let currentPlat = 'ml';
+let currentResult = null;
+let pendingQueueItem = null;
+let queue = JSON.parse(localStorage.getItem('afiliatool_queue') || '[]');
+let stats = JSON.parse(localStorage.getItem('afiliatool_stats') || '{"total":0,"pub":0}');
+
+const cfg = () => ({
+  ml:     { id: document.getElementById('cfg-ml-id').value.trim(), param: document.getElementById('cfg-ml-param').value.trim() || 'ref' },
+  shopee: { id: document.getElementById('cfg-shopee-id').value.trim(), param: document.getElementById('cfg-shopee-param').value.trim() || 'af_id' },
+  magalu: { id: document.getElementById('cfg-magalu-id').value.trim(), param: document.getElementById('cfg-magalu-param').value.trim() || 'utm_source' },
+  signature: document.getElementById('cfg-signature').value.trim(),
+});
+
+// Load saved settings
+function loadSettings() {
+  const s = JSON.parse(localStorage.getItem('afiliatool_settings') || '{}');
+  if (s.ml_id) document.getElementById('cfg-ml-id').value = s.ml_id;
+  if (s.ml_param) document.getElementById('cfg-ml-param').value = s.ml_param;
+  if (s.shopee_id) document.getElementById('cfg-shopee-id').value = s.shopee_id;
+  if (s.shopee_param) document.getElementById('cfg-shopee-param').value = s.shopee_param;
+  if (s.magalu_id) document.getElementById('cfg-magalu-id').value = s.magalu_id;
+  if (s.magalu_param) document.getElementById('cfg-magalu-param').value = s.magalu_param;
+  if (s.signature) document.getElementById('cfg-signature').value = s.signature;
+}
+
+function saveSettings() {
+  const c = cfg();
+  localStorage.setItem('afiliatool_settings', JSON.stringify({
+    ml_id: c.ml.id, ml_param: c.ml.param,
+    shopee_id: c.shopee.id, shopee_param: c.shopee.param,
+    magalu_id: c.magalu.id, magalu_param: c.magalu.param,
+    signature: c.signature,
+  }));
+  toast('✓ Configurações salvas!');
+}
+
+// ── TABS ──
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const tabs = ['converter','queue','settings'];
+  document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+  if (name === 'queue') renderQueue();
+}
+
+// ── PLATFORM SELECT ──
+function selectPlat(p) {
+  currentPlat = p;
+  ['ml','shopee','magalu'].forEach(pl => {
+    const btn = document.getElementById('btn-'+pl);
+    btn.className = 'plat-btn';
+    if (pl === p) btn.classList.add('active-'+pl);
+  });
+}
+
+// ── EXPAND SHORT LINK VIA CLAUDE AI ──
+async function expandLink() {
+  const raw = document.getElementById('input-link').value.trim();
+  if (!raw) { toast('⚠️ Cole um link primeiro!'); return; }
+
+  const status = document.getElementById('expand-status');
+  const btn = document.getElementById('btn-expand');
+  status.style.display = 'block';
+  status.style.color = 'var(--muted)';
+  status.textContent = '⏳ IA expandindo o link...';
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+
+  const urlMatch = raw.match(/https?:\/\/[^\s]+/);
+  const urlToExpand = urlMatch ? urlMatch[0] : raw;
+
+  try {
+    const response = await fetch('/api/expand', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: urlToExpand })
+    });
+
+    const data = await response.json();
+    const finalUrl = data.url;
+
+    if (finalUrl) {
+      document.getElementById('input-link').value = finalUrl;
+      status.style.color = 'var(--accent)';
+      status.textContent = '✓ Link expandido com sucesso!';
+
+      if (finalUrl.includes('mercadolivre') || finalUrl.includes('mercadolibre')) {
+        selectPlat('ml');
+        toast('✓ Expandido! Mercado Livre detectado.');
+      } else if (finalUrl.includes('shopee')) {
+        selectPlat('shopee');
+        toast('✓ Expandido! Shopee detectada.');
+      } else if (finalUrl.includes('magazineluiza') || finalUrl.includes('magazinevoce') || finalUrl.includes('magalu')) {
+        selectPlat('magalu');
+        toast('✓ Expandido! Magalu detectado.');
+      } else {
+        toast('✓ Link expandido!');
+      }
+    } else {
+      status.style.color = 'var(--accent2)';
+      status.textContent = '⚠️ Não foi possível expandir. Abra o link no navegador e copie a URL final.';
+    }
+  } catch (err) {
+    status.style.color = 'var(--accent2)';
+    status.textContent = '⚠️ Erro ao consultar IA. Verifique sua conexão.';
+  }
+
+  btn.disabled = false;
+  btn.style.opacity = '1';
+}
+
+// ── CLEAN URL ──
+function cleanUrl(raw) {
+  raw = raw.trim();
+  // Try to extract URL from text
+  const urlMatch = raw.match(/https?:\/\/[^\s]+/);
+  if (urlMatch) raw = urlMatch[0];
+  try {
+    const url = new URL(raw);
+    // Remove existing affiliate params
+    ['ref','af_id','utm_source','utm_medium','utm_campaign','aff_id','affiliate'].forEach(p => url.searchParams.delete(p));
+    return url.toString();
+  } catch {
+    return raw;
+  }
+}
+
+// ── BUILD AFFILIATE LINK ──
+function buildAffLink(cleanedUrl, plat) {
+  const c = cfg()[plat];
+  if (!c.id) {
+    toast('⚠️ Configure seu ID de afiliado em Configurações!');
+    return null;
+  }
+  try {
+    const url = new URL(cleanedUrl);
+    url.searchParams.set(c.param, c.id);
+    return url.toString();
+  } catch {
+    // If URL parsing fails, just append
+    const sep = cleanedUrl.includes('?') ? '&' : '?';
+    return `${cleanedUrl}${sep}${c.param}=${c.id}`;
+  }
+}
+
+// ── BUILD POST TEXT ──
+function buildPost(title, price, affLink, plat, style) {
+  const styles = {
+    fire:  { pre: '🔥 OFERTA IMPERDÍVEL 🔥', sep: '━━━━━━━━━━━━━━━' },
+    alert: { pre: '🚨 ALERTA DE PROMOÇÃO 🚨', sep: '─────────────' },
+    money: { pre: '💰 ECONOMIZE AGORA 💰', sep: '━━━━━━━━━━━━━━━' },
+    star:  { pre: '⭐ DESTAQUE DO DIA ⭐', sep: '─────────────' },
+    clean: { pre: '', sep: '' },
+  };
+  const s = styles[style] || styles.fire;
+  const platNames = { ml: 'Mercado Livre', shopee: 'Shopee', magalu: 'Magalu' };
+  const sig = cfg().signature;
+
+  let post = '';
+  if (s.pre) post += s.pre + '\n';
+  if (s.sep) post += s.sep + '\n';
+  post += (title || 'Promoção imperdível') + '\n';
+  if (price) post += '\n💲 ' + price + '\n';
+  post += '\n🛒 Comprar na ' + platNames[plat] + ':\n';
+  post += affLink + '\n';
+  if (sig) post += '\n' + sig;
+  return post;
+}
+
+// ── GENERATE ──
+function generateLink() {
+  const raw = document.getElementById('input-link').value.trim();
+  if (!raw) { toast('⚠️ Cole um link primeiro!'); return; }
+
+  const c = cfg()[currentPlat];
+  if (!c.id) {
+    toast('⚠️ Configure seu ID em Configurações!');
+    switchTab('settings');
+    return;
+  }
+
+  const clean = cleanUrl(raw);
+  const affLink = buildAffLink(clean, currentPlat);
+  if (!affLink) return;
+
+  const title = document.getElementById('input-title').value.trim();
+  const price = document.getElementById('input-price').value.trim();
+  const style = document.getElementById('input-style').value;
+  const postText = buildPost(title, price, affLink, currentPlat, style);
+
+  document.getElementById('output-link').value = affLink;
+
+  document.getElementById('result-link-display').textContent = affLink;
+  document.getElementById('result-post-preview').textContent = postText;
+
+  const rb = document.getElementById('result-box');
+  rb.classList.add('show');
+  rb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  currentResult = { title, price, affLink, postText, plat: currentPlat, style };
+
+  // Update stats
+  stats.total++;
+  localStorage.setItem('afiliatool_stats', JSON.stringify(stats));
+  updateStats();
+  toast('✓ Link gerado com sucesso!');
+}
+
+// ── COPY ──
+function copyLink() {
+  if (!currentResult) return;
+  navigator.clipboard.writeText(currentResult.affLink).then(() => toast('📋 Link copiado!'));
+}
+
+function copyPost() {
+  if (!currentResult) return;
+  navigator.clipboard.writeText(currentResult.postText).then(() => toast('📋 Post copiado!'));
+}
+
+// ── SHARE ──
+function shareChannel(ch) {
+  if (!currentResult) return;
+  const text = encodeURIComponent(currentResult.postText);
+  const urls = {
+    whatsapp: `https://wa.me/?text=${text}`,
+    telegram: `https://t.me/share/url?url=${encodeURIComponent(currentResult.affLink)}&text=${text}`,
+    instagram: null,
+  };
+  if (ch === 'instagram') {
+    copyPost();
+    toast('📋 Texto copiado! Cole no Instagram.');
+    return;
+  }
+  window.open(urls[ch], '_blank');
+}
+
+// ── QUEUE ──
+function addToQueue() {
+  if (!currentResult) return;
+  pendingQueueItem = { ...currentResult };
+  // Set default datetime to 1 hour from now
+  const d = new Date(Date.now() + 3600000);
+  d.setSeconds(0); d.setMilliseconds(0);
+  document.getElementById('schedule-datetime').value = d.toISOString().slice(0,16);
+  document.getElementById('schedule-form').style.display = 'block';
+  switchTab('queue');
+}
+
+function confirmSchedule() {
+  if (!pendingQueueItem) return;
+  const dt = document.getElementById('schedule-datetime').value;
+  if (!dt) { toast('⚠️ Escolha data e hora!'); return; }
+  const channels = [];
+  if (document.getElementById('ch-wpp').checked) channels.push('WhatsApp');
+  if (document.getElementById('ch-tg').checked) channels.push('Telegram');
+  if (document.getElementById('ch-ig').checked) channels.push('Instagram');
+
+  const item = {
+    id: Date.now(),
+    ...pendingQueueItem,
+    scheduledAt: dt,
+    channels,
+    status: 'agendado',
+  };
+
+  queue.unshift(item);
+  localStorage.setItem('afiliatool_queue', JSON.stringify(queue));
+  pendingQueueItem = null;
+  document.getElementById('schedule-form').style.display = 'none';
+  updateStats();
+  renderQueue();
+  toast('📅 Post agendado!');
+}
+
+function cancelSchedule() {
+  pendingQueueItem = null;
+  document.getElementById('schedule-form').style.display = 'none';
+}
+
+function markPublished(id) {
+  queue = queue.map(i => i.id === id ? { ...i, status: 'publicado' } : i);
+  localStorage.setItem('afiliatool_queue', JSON.stringify(queue));
+  stats.pub++;
+  localStorage.setItem('afiliatool_stats', JSON.stringify(stats));
+  updateStats();
+  renderQueue();
+  toast('✓ Marcado como publicado!');
+}
+
+function deleteItem(id) {
+  queue = queue.filter(i => i.id !== id);
+  localStorage.setItem('afiliatool_queue', JSON.stringify(queue));
+  updateStats();
+  renderQueue();
+  toast('🗑️ Removido da fila.');
+}
+
+function renderQueue() {
+  const list = document.getElementById('queue-list');
+  const items = queue;
+
+  if (!items.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Nenhum post na fila ainda.<br>Converta um link e agende!</div></div>`;
+    return;
+  }
+
+  const platColors = { ml: 'var(--ml)', shopee: 'var(--shopee)', magalu: 'var(--magalu)' };
+  list.innerHTML = items.map(item => {
+    const dt = new Date(item.scheduledAt);
+    const dtStr = dt.toLocaleDateString('pt-BR') + ' às ' + dt.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+    return `
+      <div class="queue-item">
+        <div class="queue-plat" style="background:${platColors[item.plat]}"></div>
+        <div class="queue-info">
+          <div class="queue-title">${item.title || 'Sem título'}</div>
+          <div class="queue-meta">
+            <span>📅 ${dtStr}</span>
+            ${item.price ? `<span>💲 ${item.price}</span>` : ''}
+            <span>${item.channels.join(', ')}</span>
+          </div>
+        </div>
+        <span class="queue-status status-${item.status}">${item.status === 'agendado' ? 'Agendado' : '✓ Publicado'}</span>
+        <div class="queue-actions">
+          ${item.status === 'agendado' ? `<button class="icon-btn" title="Copiar post" onclick="copyQueuePost(${item.id})">📋</button>` : ''}
+          ${item.status === 'agendado' ? `<button class="icon-btn" title="Marcar publicado" onclick="markPublished(${item.id})">✓</button>` : ''}
+          <button class="icon-btn" title="Remover" onclick="deleteItem(${item.id})">✕</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function copyQueuePost(id) {
+  const item = queue.find(i => i.id === id);
+  if (!item) return;
+  navigator.clipboard.writeText(item.postText).then(() => toast('📋 Post copiado!'));
+}
+
+// ── STATS ──
+function updateStats() {
+  document.getElementById('stat-total').textContent = stats.total;
+  document.getElementById('stat-queue').textContent = queue.filter(i => i.status === 'agendado').length;
+  document.getElementById('stat-pub').textContent = stats.pub;
+}
+
+// ── TOAST ──
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── INIT ──
+loadSettings();
+updateStats();
+</script>
+</body>
+</html>
