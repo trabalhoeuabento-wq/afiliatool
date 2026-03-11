@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // Allow CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -11,33 +10,17 @@ export default async function handler(req, res) {
   if (!url) return res.status(400).json({ error: 'URL não informada' });
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
+    const response = await fetch(url, {
+      method: 'GET',
+      redirect: 'follow',
       headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-beta': 'web-search-2025-03-05',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{
-          role: 'user',
-          content: `Acesse este link e me retorne APENAS a URL final completa após todos os redirecionamentos, sem nenhum texto adicional, explicação ou formatação: ${url}\n\nResponda SOMENTE com a URL final, nada mais.`
-        }]
-      })
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'pt-BR,pt;q=0.9',
+      }
     });
 
-    const data = await response.json();
-
-    const fullText = (data.content || [])
-      .filter(b => b.type === 'text')
-      .map(b => b.text.trim())
-      .join('');
-
-    const finalUrl = fullText.match(/https?:\/\/[^\s)"]+/)?.[0];
+    const finalUrl = response.url;
 
     if (finalUrl) {
       return res.status(200).json({ url: finalUrl });
@@ -46,6 +29,6 @@ export default async function handler(req, res) {
     }
 
   } catch (err) {
-    return res.status(500).json({ error: 'Erro interno: ' + err.message });
+    return res.status(500).json({ error: 'Erro ao expandir: ' + err.message });
   }
 }
